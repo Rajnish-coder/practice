@@ -76,7 +76,7 @@ void send_msg(char *s,int uid){
 	for(int i=0;i<MAX_CLIENTS;i++){
 		if(clients[i]){
 			if(clients[i]->uid!=uid){
-
+			
 				if(send(clients[i]->sockfd,s,strlen(s),0)<0){
 						printf("ERROR: write to des\n");
 						break;
@@ -107,7 +107,7 @@ void *handle_client(void *arg){
 	int leave_flag=0;
 	int flag=0;
 	client_count++;
-
+	
 	client_t *cli = (client_t*)arg;
 	if(recv(cli->sockfd,name,NAME_LEN,0)<=0){
 		printf("enter the name correctly\n");
@@ -118,7 +118,7 @@ void *handle_client(void *arg){
 		sprintf(buff,"%s has joined\n",cli->name);
 		printf("%s",buff);
 	//	send_msg(buff,cli->uid);
-
+		
 	}
 	bzero(buff,SIZE);
 
@@ -133,7 +133,7 @@ void *handle_client(void *arg){
 			leave_flag=1;
 		}
 		else if(receive>0){
-
+			
 				if(strcmp(buff,"1")==0)
 				{
 					printf("inside\n");
@@ -142,7 +142,7 @@ void *handle_client(void *arg){
 				int temp=read(cli->sockfd,buff,SIZE);
 					printf("%d\n",temp);
 					send_msg(buff,cli->uid);
-
+					
 				}
 				else{
 					read(cli->sockfd,buff,SIZE);     //name reading
@@ -162,8 +162,8 @@ void *handle_client(void *arg){
 						send(cli->sockfd,"not there",sizeof("not there"),0);
 				}
 			//	str_trim(buff,strlen(buff));
-
-
+			
+			
 		}
 		else{
 			printf("error\n");
@@ -179,75 +179,11 @@ void *handle_client(void *arg){
 	return NULL;
 }
 
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
-
-
 int main(){
-	struct sockaddr_in newaddr;
+	int sockfd,newfd;
+	struct sockaddr_in server,newaddr;
 	socklen_t addr_size;
-	 int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
-    struct addrinfo hints, *servinfo, *p;
-    struct sockaddr_storage their_addr; // connector's address information
-    socklen_t sin_size;
-    struct sigaction sa;
-    int yes=1;
-    char s[INET6_ADDRSTRLEN];
-    int rv;
-
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE; // use my IP
-
-    if ((rv = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-        return 1;
-    }
-
-    // loop through all the results and bind to the first we can
-    for(p = servinfo; p != NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype,
-                p->ai_protocol)) == -1) {
-            perror("server: socket");
-            continue;
-        }
-
-        if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
-                sizeof(int)) == -1) {
-            perror("setsockopt");
-            exit(1);
-        }
-
-        if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-            close(sockfd);
-            perror("server: bind");
-            continue;
-        }
-
-        break;
-    }
-
-    freeaddrinfo(servinfo); // all done with this structure
-
-    if (p == NULL)  {
-        fprintf(stderr, "server: failed to bind\n");
-        exit(1);
-    }
-
-    if (listen(sockfd, BACKLOG) == -1) {
-        perror("listen");
-        exit(1);
-    }
-
-    //printf("server: waiting for connections...\n");
-	/*char buff[SIZE];
+	char buff[SIZE];
 
 	sockfd = socket(PF_INET,SOCK_STREAM,0);
 	if(sockfd>=0)
@@ -263,7 +199,7 @@ int main(){
 	int listen_desc;
 	pthread_t tid;
 	listen_desc=listen(sockfd,5);
-	if(listen_desc==0)*/
+	if(listen_desc==0)
 		printf("===WELCOME TO THE GROUP===\n");
 	while(1){
 

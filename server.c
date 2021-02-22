@@ -8,7 +8,7 @@
 #include<pthread.h>
 #include<unistd.h>
 
-#define PORT 5001
+#define PORT "5001"
 #define MAX_CLIENTS 50
 #define SIZE 1024
 #define NAME_LEN 32
